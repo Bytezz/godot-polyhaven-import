@@ -1,0 +1,50 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Control",
+"class": "Page",
+"language": "GDScript",
+"path": "res://addons/PolyHavenImport/page.gd"
+}, {
+"base": "Node",
+"class": "Service",
+"language": "GDScript",
+"path": "res://addons/PolyHavenImport/service.gd"
+} ]
+_global_script_class_icons={
+"Page": "",
+"Service": ""
+}
+
+[application]
+
+config/name="godot-polyhaven-import"
+config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/PolyHavenImport/plugin.cfg" )
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[mono]
+
+project/assembly_name="godot-polyhaven-import"
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"
