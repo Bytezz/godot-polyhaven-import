@@ -4,6 +4,10 @@ Directly browse Poly Haven inside Godot editor and import assets as native Godot
 
 Would Poly Haven stand to Godot Engine as Megascans stands to Unreal Engine?
 
+# Screenshots
+
+![Browse](screenshots/browse.png)
+
 # References
 
 [Poly Haven API docs](https://redocly.github.io/redoc/?url=https://api.polyhaven.com/api-docs/swagger.json)  
