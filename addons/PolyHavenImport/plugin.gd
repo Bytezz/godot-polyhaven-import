@@ -34,7 +34,7 @@ func get_plugin_icon():
 func _main_screen_changed(screen_name: String):
 	if screen_name == get_plugin_name():
 		if _instance == null:
-			_on_scene_change_requested("res://addons/PolyHavenImport/login.tscn")
+			_on_scene_change_requested("res://addons/PolyHavenImport/browse.tscn")
 		else:
 			get_editor_interface().get_editor_viewport().add_child(_instance)
 	else:
