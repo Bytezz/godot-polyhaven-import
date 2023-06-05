@@ -11,9 +11,6 @@ margin_right = 512.0
 margin_bottom = 81.0
 size_flags_horizontal = 3
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Image" type="TextureRect" parent="."]
 margin_right = 144.0
@@ -90,8 +87,8 @@ window_title = "Open a Directory"
 resizable = true
 mode = 2
 access = 2
-current_dir = "/Dev/github/godotassets/plugin/PolyHavenImport"
-current_path = "/Dev/github/godotassets/plugin/PolyHavenImport/"
+show_hidden_files = true
+
 [connection signal="meta_clicked" from="Padding/Content/Name" to="." method="_on_Name_meta_clicked"]
 [connection signal="pressed" from="ButtonContainer/DownloadButton" to="." method="_on_DownloadButton_pressed"]
 [connection signal="pressed" from="ButtonContainer/RemoveButton" to="." method="_on_RemoveButton_pressed"]
