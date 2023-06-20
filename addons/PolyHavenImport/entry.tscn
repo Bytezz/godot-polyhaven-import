@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/PolyHavenImport/entry.gd" type="Script" id=2]
+
+[node name="Entry" type="HBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+script = ExtResource( 2 )
+
+[node name="Thumb" type="TextureRect" parent="."]
+margin_right = 150.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 150, 150 )
+expand = true
+stretch_mode = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 154.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+margin_right = 870.0
+margin_bottom = 14.0
+size_flags_vertical = 1
+text = "Asset Name"
+
+[node name="Authors" type="Label" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 870.0
+margin_bottom = 32.0
+size_flags_vertical = 1
+custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
+text = "Authors"
+
+[node name="Categories" type="Label" parent="VBoxContainer"]
+margin_top = 36.0
+margin_right = 870.0
+margin_bottom = 50.0
+size_flags_vertical = 1
+custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
+text = "Categories"
+
+[node name="Tags" type="Label" parent="VBoxContainer"]
+margin_top = 54.0
+margin_right = 870.0
+margin_bottom = 68.0
+size_flags_vertical = 1
+custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
+text = "Tags"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 580.0
+margin_right = 870.0
+margin_bottom = 600.0
+size_flags_vertical = 10
+custom_constants/separation = 0
+
+[node name="ImportBtn" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 56.0
+margin_bottom = 20.0
+text = "Import"
+
+[node name="QualityDropDown" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
+margin_left = 56.0
+margin_right = 85.0
+margin_bottom = 20.0
