@@ -64,3 +64,6 @@ func populate_quality_drop_down():
 	QualityDropDown.clear()
 	for quality in files[files.keys()[0]].keys():
 		QualityDropDown.add_item(quality)
+
+func _on_Title_pressed():
+	OS.shell_open("https://polyhaven.com/a/"+id)
