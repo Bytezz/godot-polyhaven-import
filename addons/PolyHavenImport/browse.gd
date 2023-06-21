@@ -8,9 +8,12 @@ onready var ContentPanel = get_node("MarginContainer/VBoxContainer/ContentPanel"
 onready var SearchInput = get_node("MarginContainer/VBoxContainer/SearchContainer/SearchInput")
 onready var TypesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer/TypesDropDown")
 onready var CategoriesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer2/CategoriesDropDown")
-onready var AssetsGrid = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/GridContainer")
+onready var AssetsGrid = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/GridContainer")
+onready var TopPagesContainer = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/TopPagesScroll/TopPagesContainer")
+onready var BottomPagesContainer = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/BottomPagesScroll/BottomPagesContainer")
 
-var perpagenum:int = 20 # number of elements per page
+var perpagenum:int = 40 # number of elements per page
+var pagenumber:int = 0  # current page number
 
 func _ready():
 	add_child(api)
@@ -67,9 +70,26 @@ func list_assets():
 	for child in AssetsGrid.get_children():
 		child.queue_free()
 	
-	var assets = yield(api.assets(type, category), "completed") # TODO: sort by date
+	var assets:Dictionary = yield(api.assets(type, category), "completed") # TODO: sort by date
 	if assets:
-		for asset in assets.keys().slice(0, perpagenum-1): # TODO: pages
+		for child in TopPagesContainer.get_children():
+			child.queue_free()
+		for child in BottomPagesContainer.get_children():
+			child.queue_free()
+		
+		var pages:int = assets.size()/perpagenum
+		for page in range(pages):
+			var PageBtn = Button.new()
+			PageBtn.text = str(page+1)
+			if pagenumber == page:
+				PageBtn.disabled = true
+				PageBtn.focus_mode = PageBtn.FOCUS_NONE
+			else:
+				PageBtn.connect("pressed", self, "goto_page", [page], CONNECT_PERSIST)
+			TopPagesContainer.add_child(PageBtn)
+			BottomPagesContainer.add_child(PageBtn.duplicate())
+		
+		for asset in assets.keys().slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum-1):
 			var instance = entry.instance()
 			
 			instance.id = asset
@@ -81,11 +101,17 @@ func list_assets():
 			
 			AssetsGrid.add_child(instance)
 
+func goto_page(page:int):
+	pagenumber = page
+	list_assets()
+
 func _on_TypesDropDown_item_selected(index):
+	pagenumber = 0
 	populate_categories_drop_down()
 	list_assets()
 
 func _on_CategoriesDropDown_item_selected(index):
+	pagenumber = 0
 	list_assets()
 
 func _on_SupportBtn_pressed():
