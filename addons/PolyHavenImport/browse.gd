@@ -62,6 +62,24 @@ func populate_categories_drop_down():
 		for category in categories:
 			CategoriesDropDown.add_item(category.capitalize())
 
+func sort_biarray_scnd_value(a, b): # sort an array of array by second element of array
+	if a[1] > b[1]:
+		return true
+	return false
+
+func sort_assets_by_date(assets:Dictionary):
+	var out:Array
+	var tmp:Array
+	
+	for asset in assets.keys():
+		tmp.append([asset, assets[asset]["date_published"]])
+	tmp.sort_custom(self, "sort_biarray_scnd_value")
+	
+	for e in tmp:
+		out.append(e[0])
+	
+	return out
+
 func list_assets():
 	var type = TypesDropDown.get_item_text(TypesDropDown.selected).to_lower()
 	var category = CategoriesDropDown.get_item_text(CategoriesDropDown.selected).to_lower()
@@ -70,7 +88,7 @@ func list_assets():
 	for child in AssetsGrid.get_children():
 		child.queue_free()
 	
-	var assets:Dictionary = yield(api.assets(type, category), "completed") # TODO: sort by date
+	var assets:Dictionary = yield(api.assets(type, category), "completed")
 	if assets:
 		if search != "" and search != null:
 			var search_assets:Dictionary
@@ -96,7 +114,8 @@ func list_assets():
 			TopPagesContainer.add_child(PageBtn)
 			BottomPagesContainer.add_child(PageBtn.duplicate())
 		
-		for asset in assets.keys().slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum-1):
+		var sort_assets:Array = sort_assets_by_date(assets)
+		for asset in sort_assets.slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum-1):
 			var instance = entry.instance()
 			
 			instance.info = assets[asset]
