@@ -1,6 +1,7 @@
 tool
 extends HBoxContainer
 
+var info : Dictionary
 var id : String
 var asset_name : String
 var authors : Array
@@ -57,12 +58,25 @@ func load_thumb():
 	
 	Thumb.texture = texture
 
+static func sort_qualities(a, b):
+	if a.to_int() > b.to_int():
+		return true
+	return false
+
 func populate_quality_drop_down():
 	if not files:
 		return
 	
+	var qualities:Array
+	
+	if info["type"] == 0:
+		qualities = files["hdri"].keys()
+	else:
+		qualities = files[files.keys()[0]].keys()
+	qualities.sort_custom(self, "sort_qualities")
+	
 	QualityDropDown.clear()
-	for quality in files[files.keys()[0]].keys():
+	for quality in qualities:
 		QualityDropDown.add_item(quality)
 
 func _on_Title_pressed():

@@ -99,6 +99,7 @@ func list_assets():
 		for asset in assets.keys().slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum-1):
 			var instance = entry.instance()
 			
+			instance.info = assets[asset]
 			instance.id = asset
 			instance.asset_name = assets[asset]["name"]
 			instance.authors = assets[asset]["authors"].keys()
