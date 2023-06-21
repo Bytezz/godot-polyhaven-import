@@ -65,13 +65,20 @@ func populate_categories_drop_down():
 func list_assets():
 	var type = TypesDropDown.get_item_text(TypesDropDown.selected).to_lower()
 	var category = CategoriesDropDown.get_item_text(CategoriesDropDown.selected).to_lower()
-	var search = SearchInput.text # TODO: search
+	var search = SearchInput.text
 	
 	for child in AssetsGrid.get_children():
 		child.queue_free()
 	
 	var assets:Dictionary = yield(api.assets(type, category), "completed") # TODO: sort by date
 	if assets:
+		if search != "" and search != null:
+			var search_assets:Dictionary
+			for asset in assets.keys():
+				if search.to_lower() in assets[asset]["name"].to_lower():
+					search_assets[asset] = assets[asset]
+			assets = search_assets
+		
 		for child in TopPagesContainer.get_children():
 			child.queue_free()
 		for child in BottomPagesContainer.get_children():
@@ -116,3 +123,10 @@ func _on_CategoriesDropDown_item_selected(index):
 
 func _on_SupportBtn_pressed():
 	OS.shell_open("https://www.patreon.com/polyhaven/overview")
+
+func _on_SearchInput_text_changed(new_text):
+	# TODO: add a timer to not trigger thousands of requests per second
+	list_assets()
+
+func _on_SearchInput_text_entered(new_text):
+	list_assets()
