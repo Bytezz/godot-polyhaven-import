@@ -24,7 +24,6 @@ onready var DownloadProgressBar = get_node("VBoxContainer/DownloadContainer/Down
 onready var DownloadValueLabel = get_node("VBoxContainer/DownloadContainer/DownloadValueLabel")
 
 onready var download = load("res://addons/PolyHavenImport/download.gd").new()
-var fileurl:String
 
 func _ready():
 	Title.text = asset_name
@@ -99,14 +98,15 @@ func _on_ImportBtn_pressed():
 		return
 	
 	var quality = QualityDropDown.get_item_text(QualityDropDown.selected)
+	var fileurls:Array
 	
 	if info["type"] == 0: # HDRI
 		if "exr" in files["hdri"][quality]:
-			fileurl = files["hdri"][quality]["exr"]["url"]
+			fileurls.append(files["hdri"][quality]["exr"]["url"])
 		else:
-			fileurl = files["hdri"][quality]["hdr"]["url"]
+			fileurls.append(files["hdri"][quality]["hdr"]["url"])
 		
-		download.download(fileurl)
+		download.download(fileurls)
 		
 		ImportContainer.hide()
 		DownloadContainer.show()
@@ -115,7 +115,7 @@ func _on_ImportBtn_pressed():
 	elif info["type"] == 2: # Model
 		pass
 
-func import(result):
+func import(results:Array):
 	var quality = QualityDropDown.get_item_text(QualityDropDown.selected)
 	var resourcepath:String
 	var filen:String # filename
@@ -126,9 +126,9 @@ func import(result):
 		resourcepath = "res://assets/HDRIs/"+asset_name+"/"+quality
 		dir.make_dir_recursive(resourcepath)
 		
-		filen = asset_name+"."+fileurl.split(".")[-1]
+		filen = asset_name+"."+results[0].url.split(".")[-1]
 		f.open(resourcepath+"/"+filen, File.WRITE)
-		f.store_buffer(result)
+		f.store_buffer(results[0].result)
 		f.close()
 		api._rescan_files()
 		yield(get_tree().create_timer(.3), "timeout")
@@ -153,10 +153,10 @@ func download_progress(loaded, total):
 	
 	DownloadValueLabel.text = str(loaded/1024/1024)+"MiB / "+str(total/1024/1024)+"MiB"
 
-func download_completed(result):
+func download_completed(results:Array):
 	DownloadContainer.hide()
 	ImportContainer.show()
 	
 	ImportBtn.text = "Importing..."
-	import(result)
+	import(results)
 	ImportBtn.text = "Re-import"
