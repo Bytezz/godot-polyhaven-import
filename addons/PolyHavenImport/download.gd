@@ -47,20 +47,20 @@ func _download(urls:Array):
 
 		while(http.get_status() == HTTPClient.STATUS_CONNECTING or http.get_status() == HTTPClient.STATUS_RESOLVING):
 			http.poll()
-			OS.delay_msec(100)
+			OS.delay_msec(5)
 
 		err = http.request(HTTPClient.METHOD_GET, url.url, headers)
 
 		while (http.get_status() == HTTPClient.STATUS_REQUESTING):
 			http.poll()
-			OS.delay_msec(500)
+			OS.delay_msec(5)
 		
 		if(http.has_response()):
 			while(http.get_status() == HTTPClient.STATUS_BODY):
 				http.poll()
 				chunk = http.read_response_body_chunk()
 				if(chunk.size() == 0):
-					OS.delay_usec(100)
+					OS.delay_usec(5)
 				else:
 					rb = rb+chunk
 					call_deferred("_send_downloading_signal", rb.size(), http.get_response_body_length(), i+1, urls.size())
