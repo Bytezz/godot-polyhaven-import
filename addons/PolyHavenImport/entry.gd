@@ -110,8 +110,26 @@ func _on_ImportBtn_pressed():
 		
 		ImportContainer.hide()
 		DownloadContainer.show()
+		
 	elif info["type"] == 1: # Texture
-		pass
+		if "Diffuse" in files:
+			fileurls.append(files["Diffuse"][quality]["png"]["url"]) # TODO: Using png directly without checking availability can be dangerous
+		if "Metal" in files:
+			fileurls.append(files["Metal"][quality]["png"]["url"])
+		if "Rough" in files:
+			fileurls.append(files["Rough"][quality]["png"]["url"])
+		if "AO" in files:
+			fileurls.append(files["AO"][quality]["png"]["url"])
+		if "Displacement" in files:
+			fileurls.append(files["Displacement"][quality]["png"]["url"])
+		if "nor_gl" in files:
+			fileurls.append(files["nor_gl"][quality]["png"]["url"])
+		
+		download.download(fileurls)
+		
+		ImportContainer.hide()
+		DownloadContainer.show()
+		
 	elif info["type"] == 2: # Model
 		if "gltf" in files:
 			fileurls.append(files["gltf"][quality]["gltf"]["url"])
@@ -147,18 +165,69 @@ func import(results:Array):
 		f.store_buffer(results[0].result)
 		f.close()
 		api._rescan_files()
-		yield(get_tree().create_timer(.3), "timeout")
+		yield(get_tree().create_timer(.3), "timeout") # TODO: Better wait for scan end
 		
 		var resource = PanoramaSky.new()
 		resource.panorama = load(resourcepath+"/"+filen)
 		ResourceSaver.save(resourcepath+"/"+asset_name+".tres", resource, ResourceSaver.FLAG_CHANGE_PATH)
 		api._rescan_files()
-	elif info["type"] == 1: # Texture
-		#dir.make_dir_recursive("res://assets/textures/"+asset_name)
 		
-		#var resource = Material.new()
-		#ResourceSaver.save("res://assets/textures/"+asset_name+"/"+asset_name+".tres", resource)
-		pass
+	elif info["type"] == 1: # Texture
+		resourcepath = "res://assets/textures/"+asset_name+"/"+quality
+		dir.make_dir_recursive(resourcepath+"/textures")
+		
+		var textures = {
+			"albedo":"",
+			"metallic":"",
+			"rough":"",
+			"ao":"",
+			"depth":"",
+			"normal":"",
+		}
+		
+		for result in results:
+			filen = result.url.split("/")[-1]
+			
+			if "_diff_" in filen.to_lower():
+				textures["albedo"] = resourcepath+"/textures/"+filen
+			if "_metal_" in filen.to_lower():
+				textures["metallic"] = resourcepath+"/textures/"+filen
+			if "_rough_" in filen.to_lower():
+				textures["rough"] = resourcepath+"/textures/"+filen
+			if "_ao_" in filen.to_lower() or "_bump_" in filen.to_lower():
+				textures["ao"] = resourcepath+"/textures/"+filen
+			if "_disp_" in filen.to_lower():
+				textures["depth"] = resourcepath+"/textures/"+filen
+			if "_nor_gl_" in filen.to_lower():
+				textures["normal"] = resourcepath+"/textures/"+filen
+			
+			f.open(resourcepath+"/textures/"+filen, File.WRITE)
+			f.store_buffer(result.result)
+			f.close()
+		api._rescan_files()
+		yield(get_tree().create_timer(5), "timeout")
+		
+		var resource = SpatialMaterial.new()
+		if textures.albedo != "":
+			resource.albedo_texture = load(textures.albedo)
+		if textures.metallic != "":
+			resource.metallic = .5
+			resource.metallic_texture = load(textures.metallic)
+		if textures.rough != "":
+			resource.roughness_texture = load(textures.rough)
+		if textures.ao != "":
+			resource.ao_enabled = true
+			resource.ao_texture = load(textures.ao)
+		if textures.depth != "":
+			resource.depth_enabled = true
+			resource.depth_texture = load(textures.depth)
+		if textures.normal != "":
+			resource.normal_enabled = true
+			resource.normal_texture = load(textures.normal)
+		
+		ResourceSaver.save(resourcepath+"/"+asset_name+".tres", resource, ResourceSaver.FLAG_CHANGE_PATH)
+		api._rescan_files()
+		
 	elif info["type"] == 2: # Model
 		resourcepath = "res://assets/models/"+asset_name+"/"+quality
 		dir.make_dir_recursive(resourcepath+"/textures")
