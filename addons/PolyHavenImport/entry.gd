@@ -113,7 +113,23 @@ func _on_ImportBtn_pressed():
 	elif info["type"] == 1: # Texture
 		pass
 	elif info["type"] == 2: # Model
-		pass
+		if "gltf" in files:
+			fileurls.append(files["gltf"][quality]["gltf"]["url"])
+			for i in files["gltf"][quality]["gltf"]["include"]:
+				fileurls.append(files["gltf"][quality]["gltf"]["include"][i]["url"])
+		elif "blend" in files:
+			fileurls.append(files["blend"][quality]["blend"]["url"])
+			for i in files["blend"][quality]["blend"]["include"]:
+				fileurls.append(files["blend"][quality]["blend"]["include"][i]["url"])
+		else:
+			fileurls.append(files["fbx"][quality]["fbx"]["url"])
+			for i in files["fbx"][quality]["fbx"]["include"]:
+				fileurls.append(files["fbx"][quality]["fbx"]["include"][i]["url"])
+		
+		download.download(fileurls)
+		
+		ImportContainer.hide()
+		DownloadContainer.show()
 
 func import(results:Array):
 	var quality = QualityDropDown.get_item_text(QualityDropDown.selected)
@@ -144,8 +160,17 @@ func import(results:Array):
 		#ResourceSaver.save("res://assets/textures/"+asset_name+"/"+asset_name+".tres", resource)
 		pass
 	elif info["type"] == 2: # Model
-		#dir.make_dir_recursive("res://assets/models/"+asset_name)
-		pass
+		resourcepath = "res://assets/models/"+asset_name+"/"+quality
+		dir.make_dir_recursive(resourcepath+"/textures")
+		
+		for result in results:
+			filen = result.url.split("/")[-1]
+			if filen.ends_with(".jpg") or filen.ends_with(".jpeg") or filen.ends_with(".png") or filen.ends_with(".exr"):
+				filen = "textures/"+filen
+			f.open(resourcepath+"/"+filen, File.WRITE)
+			f.store_buffer(result.result)
+			f.close()
+		api._rescan_files()
 
 func download_progress(loaded, total):
 	DownloadProgressBar.max_value = total
