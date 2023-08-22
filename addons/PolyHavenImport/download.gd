@@ -3,7 +3,7 @@ extends Node
 
 var t = Thread.new()
 
-signal downloading(bytes_loaded, bytes_total)
+signal downloading(bytes_loaded, bytes_total, loadingfilenum, totalfilenum)
 signal downloaded(result)
 
 func download(urls:Array):
@@ -30,15 +30,18 @@ func download(urls:Array):
 	
 	t.start(self, "_download", formattedurls)
 
-func _download(urls):
+func _download(urls:Array):
 	var err = 0
 	var http = HTTPClient.new()
 	var headers = ["User-Agent: Godot-Polyhaven-Import", "Accept: */*"]
 	var results : Array = []
 	var rb : PoolByteArray
 	var chunk
+	var url:Dictionary
+	var i:int = 0
 	
-	for url in urls:
+	while i < urls.size():
+		url = urls[i]
 		rb = PoolByteArray()
 		err = http.connect_to_host(url.domain, -1, true)
 
@@ -60,15 +63,16 @@ func _download(urls):
 					OS.delay_usec(100)
 				else:
 					rb = rb+chunk
-					call_deferred("_send_downloading_signal", rb.size(), http.get_response_body_length())
+					call_deferred("_send_downloading_signal", rb.size(), http.get_response_body_length(), i+1, urls.size())
 
 		results.append({"url":url.url,"result":rb})
 		http.close()
+		i+=1
 	call_deferred("_send_downloaded_signal")
 	return results
 
-func _send_downloading_signal(loaded, total):
-	emit_signal("downloading", loaded, total)
+func _send_downloading_signal(loaded, total, loadingfilenum, totalfilenum):
+	emit_signal("downloading", loaded, total, loadingfilenum, totalfilenum)
 
 func _send_downloaded_signal():
 	var result = t.wait_to_finish()

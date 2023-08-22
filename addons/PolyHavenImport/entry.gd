@@ -172,11 +172,21 @@ func import(results:Array):
 			f.close()
 		api._rescan_files()
 
-func download_progress(loaded, total):
+func download_progress(loaded, total, loadingfilenum, totalfilenum):
+	var units:Array = ["B","KiB","MiB","GiB"]
+	var sunit:int = 0
+	var unit:String
+	
 	DownloadProgressBar.max_value = total
 	DownloadProgressBar.value = loaded
 	
-	DownloadValueLabel.text = str(loaded/1024/1024)+"MiB / "+str(total/1024/1024)+"MiB"
+	while total>1024 and sunit < units.size():
+		total/=1024
+		loaded/=1024
+		sunit+=1
+	unit = units[sunit]
+	
+	DownloadValueLabel.text = str(loaded)+unit+" / "+str(total)+unit+" ("+str(loadingfilenum)+"/"+str(totalfilenum)+")"
 
 func download_completed(results:Array):
 	DownloadContainer.hide()
