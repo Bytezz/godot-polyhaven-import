@@ -47,21 +47,41 @@ margin_bottom = 68.0
 size_flags_vertical = 1
 custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ImportContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 580.0
 margin_right = 870.0
 margin_bottom = 600.0
 size_flags_vertical = 10
 custom_constants/separation = 0
 
-[node name="ImportBtn" type="Button" parent="VBoxContainer/HBoxContainer"]
+[node name="ImportBtn" type="Button" parent="VBoxContainer/ImportContainer"]
 margin_right = 56.0
 margin_bottom = 20.0
 text = "Import"
 
-[node name="QualityDropDown" type="OptionButton" parent="VBoxContainer/HBoxContainer"]
+[node name="QualityDropDown" type="OptionButton" parent="VBoxContainer/ImportContainer"]
 margin_left = 56.0
 margin_right = 85.0
 margin_bottom = 20.0
 
+[node name="DownloadContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+margin_top = 586.0
+margin_right = 870.0
+margin_bottom = 600.0
+size_flags_vertical = 10
+custom_constants/separation = 0
+
+[node name="DownloadProgressBar" type="ProgressBar" parent="VBoxContainer/DownloadContainer"]
+margin_right = 807.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="DownloadValueLabel" type="Label" parent="VBoxContainer/DownloadContainer"]
+margin_left = 807.0
+margin_right = 870.0
+margin_bottom = 14.0
+text = "MiB / MiB"
+
 [connection signal="pressed" from="VBoxContainer/Title" to="." method="_on_Title_pressed"]
+[connection signal="pressed" from="VBoxContainer/ImportContainer/ImportBtn" to="." method="_on_ImportBtn_pressed"]
