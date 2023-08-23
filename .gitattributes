@@ -5,4 +5,5 @@
 /README.md          export-ignore
 /project.godot      export-ignore
 /icon.png           export-ignore
+/default_env.tres   export-ignore
 /screenshots        export-ignore
