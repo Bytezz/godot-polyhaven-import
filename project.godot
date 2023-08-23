@@ -13,15 +13,9 @@ _global_script_classes=[ {
 "class": "Page",
 "language": "GDScript",
 "path": "res://addons/PolyHavenImport/page.gd"
-}, {
-"base": "Node",
-"class": "Service",
-"language": "GDScript",
-"path": "res://addons/PolyHavenImport/service.gd"
 } ]
 _global_script_class_icons={
-"Page": "",
-"Service": ""
+"Page": ""
 }
 
 [application]
