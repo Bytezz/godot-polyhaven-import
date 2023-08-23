@@ -6,6 +6,8 @@ var apiurl : String = "https://api.polyhaven.com/"
 func _rescan_files(): # Make editor rescan for files
 	var editor_file_system := get_editor_interface().get_resource_filesystem()
 	editor_file_system.scan()
+	yield(editor_file_system, "sources_changed")
+	return 0
 
 func _req(url:String, json=true):
 	var req = HTTPRequest.new()

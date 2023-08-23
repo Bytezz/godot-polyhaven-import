@@ -164,8 +164,7 @@ func import(results:Array):
 		f.open(resourcepath+"/"+filen, File.WRITE)
 		f.store_buffer(results[0].result)
 		f.close()
-		api._rescan_files()
-		yield(get_tree().create_timer(.3), "timeout") # TODO: Better wait for scan end
+		yield(api._rescan_files(), "completed")
 		
 		var resource = PanoramaSky.new()
 		resource.panorama = load(resourcepath+"/"+filen)
@@ -204,8 +203,7 @@ func import(results:Array):
 			f.open(resourcepath+"/textures/"+filen, File.WRITE)
 			f.store_buffer(result.result)
 			f.close()
-		api._rescan_files()
-		yield(get_tree().create_timer(5), "timeout")
+		yield(api._rescan_files(), "completed")
 		
 		var resource = SpatialMaterial.new()
 		if textures.albedo != "":
