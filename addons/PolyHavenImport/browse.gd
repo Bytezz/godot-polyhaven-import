@@ -1,16 +1,16 @@
-tool
+@tool
 extends Page
 
 var entry = preload("res://addons/PolyHavenImport/entry.tscn")
-onready var api = load("res://addons/PolyHavenImport/api.gd").new()
+@onready var api = load("res://addons/PolyHavenImport/api.gd").new()
 
-onready var ContentPanel = get_node("MarginContainer/VBoxContainer/ContentPanel")
-onready var SearchInput = get_node("MarginContainer/VBoxContainer/SearchContainer/SearchInput")
-onready var TypesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer/TypesDropDown")
-onready var CategoriesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer2/CategoriesDropDown")
-onready var AssetsGrid = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/GridContainer")
-onready var TopPagesContainer = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/TopPagesScroll/TopPagesContainer")
-onready var BottomPagesContainer = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/BottomPagesScroll/BottomPagesContainer")
+@onready var ContentPanel = get_node("MarginContainer/VBoxContainer/ContentPanel")
+@onready var SearchInput = get_node("MarginContainer/VBoxContainer/SearchContainer/SearchInput")
+@onready var TypesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer/TypesDropDown")
+@onready var CategoriesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer2/CategoriesDropDown")
+@onready var AssetsGrid = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/GridContainer")
+@onready var TopPagesContainer = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/TopPagesScroll/TopPagesContainer")
+@onready var BottomPagesContainer = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/BottomPagesScroll/BottomPagesContainer")
 
 var perpagenum:int = 40 # number of elements per page
 var pagenumber:int = 0  # current page number
@@ -20,7 +20,7 @@ func _ready():
 	init()
 
 func init():
-	if not yield(api.check(), "completed"):
+	if not await api.check():
 		ContentPanel.get_node("Assets").hide()
 		ContentPanel.get_node("Error").show()
 	else:
@@ -35,7 +35,7 @@ func _on_ErrorRetryBtn_pressed():
 	self.init()
 
 func populate_types_drop_down():
-	var types = yield(api.types(), "completed")
+	var types = await api.types()
 	if not types:
 		return
 	
@@ -51,7 +51,7 @@ func populate_categories_drop_down():
 	
 	CategoriesDropDown.clear()
 	
-	var categories = yield(api.categories(type), "completed")
+	var categories = await api.categories(type)
 	if not categories:
 		CategoriesDropDown.add_item("All")
 		return
@@ -73,7 +73,7 @@ func sort_assets_by_date(assets:Dictionary):
 	
 	for asset in assets.keys():
 		tmp.append([asset, assets[asset]["date_published"]])
-	tmp.sort_custom(self, "sort_biarray_scnd_value")
+	tmp.sort_custom(Callable(self, "sort_biarray_scnd_value"))
 	
 	for e in tmp:
 		out.append(e[0])
@@ -88,7 +88,7 @@ func list_assets():
 	for child in AssetsGrid.get_children():
 		child.queue_free()
 	
-	var assets:Dictionary = yield(api.assets(type, category), "completed")
+	var assets:Dictionary = await api.assets(type, category)
 	if assets:
 		if search != "" and search != null:
 			var search_assets:Dictionary
@@ -110,13 +110,13 @@ func list_assets():
 				PageBtn.disabled = true
 				PageBtn.focus_mode = PageBtn.FOCUS_NONE
 			else:
-				PageBtn.connect("pressed", self, "goto_page", [page], CONNECT_PERSIST)
+				PageBtn.connect("pressed", Callable(self, "goto_page").bind(page), CONNECT_PERSIST)
 			TopPagesContainer.add_child(PageBtn)
 			BottomPagesContainer.add_child(PageBtn.duplicate())
 		
 		var sort_assets:Array = sort_assets_by_date(assets)
 		for asset in sort_assets.slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum-1):
-			var instance = entry.instance()
+			var instance = entry.instantiate()
 			
 			instance.info = assets[asset]
 			instance.id = asset

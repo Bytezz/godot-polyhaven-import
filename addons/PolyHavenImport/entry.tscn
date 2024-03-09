@@ -1,86 +1,67 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://dqurua3ttf8dj"]
 
-[ext_resource path="res://addons/PolyHavenImport/entry.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://addons/PolyHavenImport/entry.gd" id="2"]
 
 [node name="Entry" type="HBoxContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Thumb" type="TextureRect" parent="."]
-margin_right = 150.0
-margin_bottom = 600.0
-rect_min_size = Vector2( 150, 150 )
-expand = true
-stretch_mode = 6
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-margin_left = 154.0
-margin_right = 1024.0
-margin_bottom = 600.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Title" type="LinkButton" parent="VBoxContainer"]
-margin_right = 870.0
-margin_bottom = 14.0
+layout_mode = 2
 underline = 1
 
 [node name="Authors" type="Label" parent="VBoxContainer"]
-margin_top = 18.0
-margin_right = 870.0
-margin_bottom = 32.0
+layout_mode = 2
 size_flags_vertical = 1
-custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
+theme_override_colors/font_color = Color(0.470588, 0.470588, 0.470588, 1)
 
 [node name="Categories" type="Label" parent="VBoxContainer"]
-margin_top = 36.0
-margin_right = 870.0
-margin_bottom = 50.0
+layout_mode = 2
 size_flags_vertical = 1
-custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
+theme_override_colors/font_color = Color(0.470588, 0.470588, 0.470588, 1)
 
 [node name="Tags" type="Label" parent="VBoxContainer"]
-margin_top = 54.0
-margin_right = 870.0
-margin_bottom = 68.0
+layout_mode = 2
 size_flags_vertical = 1
-custom_colors/font_color = Color( 0.470588, 0.470588, 0.470588, 1 )
+theme_override_colors/font_color = Color(0.470588, 0.470588, 0.470588, 1)
 
 [node name="ImportContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 580.0
-margin_right = 870.0
-margin_bottom = 600.0
+layout_mode = 2
 size_flags_vertical = 10
-custom_constants/separation = 0
+theme_override_constants/separation = 0
 
 [node name="ImportBtn" type="Button" parent="VBoxContainer/ImportContainer"]
-margin_right = 56.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "Import"
 
 [node name="QualityDropDown" type="OptionButton" parent="VBoxContainer/ImportContainer"]
-margin_left = 56.0
-margin_right = 85.0
-margin_bottom = 20.0
+layout_mode = 2
 
 [node name="DownloadContainer" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
-margin_top = 586.0
-margin_right = 870.0
-margin_bottom = 600.0
+layout_mode = 2
 size_flags_vertical = 10
-custom_constants/separation = 0
+theme_override_constants/separation = 0
 
 [node name="DownloadProgressBar" type="ProgressBar" parent="VBoxContainer/DownloadContainer"]
-margin_right = 807.0
-margin_bottom = 14.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="DownloadValueLabel" type="Label" parent="VBoxContainer/DownloadContainer"]
-margin_left = 807.0
-margin_right = 870.0
-margin_bottom = 14.0
+layout_mode = 2
 text = "MiB / MiB"
 
 [connection signal="pressed" from="VBoxContainer/Title" to="." method="_on_Title_pressed"]

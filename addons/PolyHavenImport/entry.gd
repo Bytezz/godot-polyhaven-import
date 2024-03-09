@@ -1,4 +1,4 @@
-tool
+@tool
 extends HBoxContainer
 
 var info : Dictionary
@@ -11,19 +11,19 @@ var files : Dictionary
 
 var api
 
-onready var Title = get_node("VBoxContainer/Title")
-onready var Authors = get_node("VBoxContainer/Authors")
-onready var Categories = get_node("VBoxContainer/Categories")
-onready var Tags = get_node("VBoxContainer/Tags")
-onready var Thumb = get_node("Thumb")
-onready var ImportContainer = get_node("VBoxContainer/ImportContainer")
-onready var ImportBtn = get_node("VBoxContainer/ImportContainer/ImportBtn")
-onready var QualityDropDown = get_node("VBoxContainer/ImportContainer/QualityDropDown")
-onready var DownloadContainer = get_node("VBoxContainer/DownloadContainer")
-onready var DownloadProgressBar = get_node("VBoxContainer/DownloadContainer/DownloadProgressBar")
-onready var DownloadValueLabel = get_node("VBoxContainer/DownloadContainer/DownloadValueLabel")
+@onready var Title = get_node("VBoxContainer/Title")
+@onready var Authors = get_node("VBoxContainer/Authors")
+@onready var Categories = get_node("VBoxContainer/Categories")
+@onready var Tags = get_node("VBoxContainer/Tags")
+@onready var Thumb = get_node("Thumb")
+@onready var ImportContainer = get_node("VBoxContainer/ImportContainer")
+@onready var ImportBtn = get_node("VBoxContainer/ImportContainer/ImportBtn")
+@onready var QualityDropDown = get_node("VBoxContainer/ImportContainer/QualityDropDown")
+@onready var DownloadContainer = get_node("VBoxContainer/DownloadContainer")
+@onready var DownloadProgressBar = get_node("VBoxContainer/DownloadContainer/DownloadProgressBar")
+@onready var DownloadValueLabel = get_node("VBoxContainer/DownloadContainer/DownloadValueLabel")
 
-onready var download = load("res://addons/PolyHavenImport/download.gd").new()
+@onready var download = load("res://addons/PolyHavenImport/download.gd").new()
 
 func _ready():
 	Title.text = asset_name
@@ -32,12 +32,12 @@ func _ready():
 	Tags.text = beautify_list(tags)
 	
 	load_thumb()
-	files = yield(api.asset_files(id), "completed")
+	files = await api.asset_files(id)
 	populate_quality_drop_down()
 	
 	add_child(download)
-	download.connect("downloading", self, "download_progress")
-	download.connect("downloaded", self, "download_completed")
+	download.connect("downloading", Callable(self, "download_progress"))
+	download.connect("downloaded", Callable(self, "download_completed"))
 
 func beautify_list(list:Array, cap:bool=true):
 	var out:String
@@ -60,14 +60,11 @@ func beautify_list(list:Array, cap:bool=true):
 	return out
 
 func load_thumb():
-	var thumb = yield(api.thumb(id, 150), "completed")
+	var thumb = await api.thumb(id, 150)
 	if thumb == null:
 		return
 	
-	var texture = ImageTexture.new()
-	texture.create_from_image(thumb)
-	
-	Thumb.texture = texture
+	Thumb.texture = ImageTexture.create_from_image(thumb)
 
 static func sort_qualities(a, b):
 	if a.to_int() > b.to_int():
@@ -84,7 +81,7 @@ func populate_quality_drop_down():
 		qualities = files["hdri"].keys()
 	else:
 		qualities = files[files.keys()[0]].keys()
-	qualities.sort_custom(self, "sort_qualities")
+	qualities.sort_custom(Callable(self, "sort_qualities"))
 	
 	QualityDropDown.clear()
 	for quality in qualities:
@@ -111,7 +108,7 @@ func _on_ImportBtn_pressed():
 		ImportContainer.hide()
 		DownloadContainer.show()
 		
-	elif info["type"] == 1: # Texture
+	elif info["type"] == 1: # Texture2D
 		if "Diffuse" in files:
 			fileurls.append(files["Diffuse"][quality]["png"]["url"]) # TODO: Using png directly without checking availability can be dangerous
 		if "Metal" in files:
@@ -153,27 +150,28 @@ func import(results:Array):
 	var quality = QualityDropDown.get_item_text(QualityDropDown.selected)
 	var resourcepath:String
 	var filen:String # filename
-	var dir = Directory.new()
-	var f = File.new()
+	var f:FileAccess
 	
 	if info["type"] == 0: # HDRI
 		resourcepath = "res://assets/HDRIs/"+asset_name+"/"+quality
-		dir.make_dir_recursive(resourcepath)
+		DirAccess.make_dir_recursive_absolute(resourcepath)
 		
 		filen = asset_name+"."+results[0].url.split(".")[-1]
-		f.open(resourcepath+"/"+filen, File.WRITE)
+		f = FileAccess.open(resourcepath+"/"+filen, FileAccess.WRITE)
 		f.store_buffer(results[0].result)
 		f.close()
-		yield(api._rescan_files(), "completed")
+		await api._rescan_files()
 		
-		var resource = PanoramaSky.new()
-		resource.panorama = load(resourcepath+"/"+filen)
-		ResourceSaver.save(resourcepath+"/"+asset_name+".tres", resource, ResourceSaver.FLAG_CHANGE_PATH)
+		var resource = Sky.new()
+		var panorama = PanoramaSkyMaterial.new()
+		panorama.set_panorama(load(resourcepath+"/"+filen))
+		resource.set_material(panorama)
+		ResourceSaver.save(resource, resourcepath+"/"+asset_name+".tres", ResourceSaver.FLAG_CHANGE_PATH)
 		api._rescan_files()
 		
-	elif info["type"] == 1: # Texture
+	elif info["type"] == 1: # Texture2D
 		resourcepath = "res://assets/textures/"+asset_name+"/"+quality
-		dir.make_dir_recursive(resourcepath+"/textures")
+		DirAccess.make_dir_recursive_absolute(resourcepath+"/textures")
 		
 		var textures = {
 			"albedo":"",
@@ -200,12 +198,12 @@ func import(results:Array):
 			if "_nor_gl_" in filen.to_lower():
 				textures["normal"] = resourcepath+"/textures/"+filen
 			
-			f.open(resourcepath+"/textures/"+filen, File.WRITE)
+			f = FileAccess.open(resourcepath+"/textures/"+filen, FileAccess.WRITE)
 			f.store_buffer(result.result)
 			f.close()
-		yield(api._rescan_files(), "completed")
+		await api._rescan_files()
 		
-		var resource = SpatialMaterial.new()
+		var resource = StandardMaterial3D.new()
 		if textures.albedo != "":
 			resource.albedo_texture = load(textures.albedo)
 		if textures.metallic != "":
@@ -223,18 +221,18 @@ func import(results:Array):
 			resource.normal_enabled = true
 			resource.normal_texture = load(textures.normal)
 		
-		ResourceSaver.save(resourcepath+"/"+asset_name+".tres", resource, ResourceSaver.FLAG_CHANGE_PATH)
+		ResourceSaver.save(resource, resourcepath+"/"+asset_name+".tres", ResourceSaver.FLAG_CHANGE_PATH)
 		api._rescan_files()
 		
 	elif info["type"] == 2: # Model
 		resourcepath = "res://assets/models/"+asset_name+"/"+quality
-		dir.make_dir_recursive(resourcepath+"/textures")
+		DirAccess.make_dir_recursive_absolute(resourcepath+"/textures")
 		
 		for result in results:
 			filen = result.url.split("/")[-1]
 			if filen.ends_with(".jpg") or filen.ends_with(".jpeg") or filen.ends_with(".png") or filen.ends_with(".exr"):
 				filen = "textures/"+filen
-			f.open(resourcepath+"/"+filen, File.WRITE)
+			f = FileAccess.open(resourcepath+"/"+filen, FileAccess.WRITE)
 			f.store_buffer(result.result)
 			f.close()
 		api._rescan_files()
