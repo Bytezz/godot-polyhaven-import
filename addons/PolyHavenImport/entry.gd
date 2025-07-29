@@ -25,7 +25,7 @@ var api
 
 @onready var download = load("res://addons/PolyHavenImport/download.gd").new()
 
-func _ready():
+func _ready() -> void:
 	Title.text = asset_name
 	Authors.text = beautify_list(authors, false)
 	Categories.text = beautify_list(categories)
@@ -153,25 +153,25 @@ func import(results:Array):
 	var f:FileAccess
 	
 	if info["type"] == 0: # HDRI
-		resourcepath = "res://assets/HDRIs/"+asset_name+"/"+quality
+		resourcepath = ProjectSettings.get_setting("poly_haven_import/hdris_path").path_join(asset_name).path_join(quality)
 		DirAccess.make_dir_recursive_absolute(resourcepath)
 		
 		filen = asset_name+"."+results[0].url.split(".")[-1]
-		f = FileAccess.open(resourcepath+"/"+filen, FileAccess.WRITE)
+		f = FileAccess.open(resourcepath.path_join(filen), FileAccess.WRITE)
 		f.store_buffer(results[0].result)
 		f.close()
 		await api._rescan_files()
 		
 		var resource = Sky.new()
 		var panorama = PanoramaSkyMaterial.new()
-		panorama.set_panorama(load(resourcepath+"/"+filen))
+		panorama.set_panorama(load(resourcepath.path_join(filen)))
 		resource.set_material(panorama)
-		ResourceSaver.save(resource, resourcepath+"/"+asset_name+".tres", ResourceSaver.FLAG_CHANGE_PATH)
+		ResourceSaver.save(resource, resourcepath.path_join(asset_name+".tres"), ResourceSaver.FLAG_CHANGE_PATH)
 		api._rescan_files()
 		
 	elif info["type"] == 1: # Texture2D
-		resourcepath = "res://assets/textures/"+asset_name+"/"+quality
-		DirAccess.make_dir_recursive_absolute(resourcepath+"/textures")
+		resourcepath = ProjectSettings.get_setting("poly_haven_import/textures_path").path_join(asset_name).path_join(quality)
+		DirAccess.make_dir_recursive_absolute(resourcepath.path_join("textures"))
 		
 		var textures = {
 			"albedo":"",
@@ -184,21 +184,22 @@ func import(results:Array):
 		
 		for result in results:
 			filen = result.url.split("/")[-1]
+			var filen_path:String = resourcepath.path_join("textures").path_join(filen)
 			
 			if "_diff_" in filen.to_lower():
-				textures["albedo"] = resourcepath+"/textures/"+filen
+				textures["albedo"] = filen_path
 			if "_metal_" in filen.to_lower():
-				textures["metallic"] = resourcepath+"/textures/"+filen
+				textures["metallic"] = filen_path
 			if "_rough_" in filen.to_lower():
-				textures["rough"] = resourcepath+"/textures/"+filen
+				textures["rough"] = filen_path
 			if "_ao_" in filen.to_lower() or "_bump_" in filen.to_lower():
-				textures["ao"] = resourcepath+"/textures/"+filen
+				textures["ao"] = filen_path
 			if "_disp_" in filen.to_lower():
-				textures["depth"] = resourcepath+"/textures/"+filen
+				textures["depth"] = filen_path
 			if "_nor_gl_" in filen.to_lower():
-				textures["normal"] = resourcepath+"/textures/"+filen
+				textures["normal"] = filen_path
 			
-			f = FileAccess.open(resourcepath+"/textures/"+filen, FileAccess.WRITE)
+			f = FileAccess.open(filen_path, FileAccess.WRITE)
 			f.store_buffer(result.result)
 			f.close()
 		await api._rescan_files()
@@ -221,18 +222,20 @@ func import(results:Array):
 			resource.normal_enabled = true
 			resource.normal_texture = load(textures.normal)
 		
-		ResourceSaver.save(resource, resourcepath+"/"+asset_name+".tres", ResourceSaver.FLAG_CHANGE_PATH)
+		resource.uv1_triplanar = ProjectSettings.get_setting("poly_haven_import/make_materials_triplanar", false)
+		
+		ResourceSaver.save(resource, resourcepath.path_join(asset_name+".tres"), ResourceSaver.FLAG_CHANGE_PATH)
 		api._rescan_files()
 		
 	elif info["type"] == 2: # Model
-		resourcepath = "res://assets/models/"+asset_name+"/"+quality
-		DirAccess.make_dir_recursive_absolute(resourcepath+"/textures")
+		resourcepath = ProjectSettings.get_setting("poly_haven_import/models_path").path_join(asset_name).path_join(quality)
+		DirAccess.make_dir_recursive_absolute(resourcepath.path_join("textures"))
 		
 		for result in results:
 			filen = result.url.split("/")[-1]
 			if filen.ends_with(".jpg") or filen.ends_with(".jpeg") or filen.ends_with(".png") or filen.ends_with(".exr"):
 				filen = "textures/"+filen
-			f = FileAccess.open(resourcepath+"/"+filen, FileAccess.WRITE)
+			f = FileAccess.open(resourcepath.path_join(filen), FileAccess.WRITE)
 			f.store_buffer(result.result)
 			f.close()
 		api._rescan_files()
