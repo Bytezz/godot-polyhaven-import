@@ -4,6 +4,26 @@ extends EditorPlugin
 var _instance
 
 func _enter_tree():
+	if not Engine.is_editor_hint():
+		return
+	
+	## Project Menu settings
+	for setting in [
+		["poly_haven_import/hdris_path", "res://assets/HDRIs", PROPERTY_HINT_DIR],
+		["poly_haven_import/textures_path", "res://assets/textures", PROPERTY_HINT_DIR],
+		["poly_haven_import/models_path", "res://assets/models", PROPERTY_HINT_DIR],
+		
+		["poly_haven_import/make_materials_triplanar", false, PROPERTY_HINT_NONE],
+	]:
+		if not ProjectSettings.has_setting(setting[0]):
+			ProjectSettings.set_setting(setting[0], setting[1])
+			ProjectSettings.set_initial_value(setting[0], setting[1])
+			ProjectSettings.add_property_info({
+				"name": setting[0],
+				"type": typeof(setting[1]),
+				"hint": setting[2],
+			})
+	
 	self.connect("main_screen_changed", Callable(self, "_main_screen_changed"))
 	
 	_make_visible(false)
