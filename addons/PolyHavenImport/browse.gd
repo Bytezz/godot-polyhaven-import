@@ -150,3 +150,16 @@ func _on_SearchInput_text_changed(new_text):
 
 func _on_SearchInput_text_entered(new_text):
 	list_assets()
+
+func _on_SettingsBtn_pressed():
+	var project_settings_editor = EditorInterface.get_base_control().find_child("*ProjectSettingsEditor*", true, false)
+	var project_settings_editor_tab_container:TabContainer = project_settings_editor.find_child("*TabContainer*", true, false)
+	var project_settings_editor_general_tab:Control = project_settings_editor_tab_container.find_child("*"+TranslationServer.translate("General")+"*", true, false)
+	var general_tab_search_field:LineEdit = project_settings_editor_general_tab.get_child(0).get_child(0)
+	
+	project_settings_editor.popup()
+	project_settings_editor_tab_container.set_current_tab(
+		project_settings_editor_tab_container.get_tab_idx_from_control(project_settings_editor_general_tab)
+	)
+	general_tab_search_field.text = "Poly Haven Import"
+	general_tab_search_field.emit_signal("text_changed", "Poly Haven Import")
