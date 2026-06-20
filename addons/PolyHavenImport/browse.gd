@@ -157,6 +157,7 @@ func _on_SettingsBtn_pressed():
 	var project_settings_editor_tab_container:TabContainer = project_settings_editor.find_child("*TabContainer*", true, false)
 	var project_settings_editor_general_tab:Control = project_settings_editor_tab_container.find_child("*"+TranslationServer.translate("General")+"*", true, false)
 	var general_tab_search_field:LineEdit = project_settings_editor_general_tab.get_child(0).get_child(0)
+	var settings_tree:Tree = project_settings_editor_general_tab.get_child(2).get_child(0).get_child(0)
 	
 	project_settings_editor.popup()
 	project_settings_editor_tab_container.set_current_tab(
@@ -164,3 +165,4 @@ func _on_SettingsBtn_pressed():
 	)
 	general_tab_search_field.text = "Poly Haven Import"
 	general_tab_search_field.emit_signal("text_changed", "Poly Haven Import")
+	settings_tree.set_selected(settings_tree.get_item_at_position(Vector2(0,0)), 0)
