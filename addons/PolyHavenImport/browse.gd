@@ -6,6 +6,7 @@ var entry = preload("res://addons/PolyHavenImport/entry.tscn")
 
 @onready var ContentPanel = get_node("MarginContainer/VBoxContainer/ContentPanel")
 @onready var SearchInput = get_node("MarginContainer/VBoxContainer/SearchContainer/SearchInput")
+@onready var SortDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/SortHBoxContainer/SortDropDown")
 @onready var TypesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer/TypesDropDown")
 @onready var CategoriesDropDown = get_node("MarginContainer/VBoxContainer/FilterContainer/HBoxContainer2/CategoriesDropDown")
 @onready var AssetsGrid = get_node("MarginContainer/VBoxContainer/ContentPanel/Assets/MarginContainer/VBoxContainer/GridContainer")
@@ -67,12 +68,14 @@ func sort_biarray_scnd_value(a, b): # sort an array of array by second element o
 		return true
 	return false
 
-func sort_assets_by_date(assets:Dictionary):
+func sort_assets_by_property(assets:Dictionary, property:String="date_published"):
 	var out:Array
 	var tmp:Array
+	var sort_properties: Array = ["date_published", "download_count"]
+	var sort_property: String = sort_properties[SortDropDown.get_selected_id()]
 	
 	for asset in assets.keys():
-		tmp.append([asset, assets[asset]["date_published"]])
+		tmp.append([asset, assets[asset][sort_property]])
 	tmp.sort_custom(Callable(self, "sort_biarray_scnd_value"))
 	
 	for e in tmp:
@@ -114,7 +117,7 @@ func list_assets():
 			TopPagesContainer.add_child(PageBtn)
 			BottomPagesContainer.add_child(PageBtn.duplicate())
 		
-		var sort_assets:Array = sort_assets_by_date(assets)
+		var sort_assets:Array = sort_assets_by_property(assets)
 		for asset in sort_assets.slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum):
 			var instance = entry.instantiate()
 			
@@ -131,6 +134,10 @@ func list_assets():
 
 func goto_page(page:int):
 	pagenumber = page
+	list_assets()
+
+func _on_sort_drop_down_item_selected(index):
+	pagenumber = 0
 	list_assets()
 
 func _on_TypesDropDown_item_selected(index):
