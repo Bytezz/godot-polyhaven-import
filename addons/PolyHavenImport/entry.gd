@@ -7,6 +7,7 @@ var asset_name : String
 var authors : Array
 var categories : Array
 var tags : Array
+var downloads_num : int
 var files : Dictionary
 
 var api
@@ -19,6 +20,7 @@ var api
 @onready var ImportContainer = get_node("VBoxContainer/ImportContainer")
 @onready var ImportBtn = get_node("VBoxContainer/ImportContainer/ImportBtn")
 @onready var QualityDropDown = get_node("VBoxContainer/ImportContainer/QualityDropDown")
+@onready var DownloadsNumber = get_node("VBoxContainer/ImportContainer/DownloadsNum")
 @onready var DownloadContainer = get_node("VBoxContainer/DownloadContainer")
 @onready var DownloadProgressBar = get_node("VBoxContainer/DownloadContainer/DownloadProgressBar")
 @onready var DownloadValueLabel = get_node("VBoxContainer/DownloadContainer/DownloadValueLabel")
@@ -30,6 +32,7 @@ func _ready() -> void:
 	Authors.text = beautify_list(authors, false)
 	Categories.text = beautify_list(categories)
 	Tags.text = beautify_list(tags)
+	DownloadsNumber.text = str(downloads_num) + " downloads"
 	
 	load_thumb()
 	files = await api.asset_files(id)

@@ -115,7 +115,7 @@ func list_assets():
 			BottomPagesContainer.add_child(PageBtn.duplicate())
 		
 		var sort_assets:Array = sort_assets_by_date(assets)
-		for asset in sort_assets.slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum-1):
+		for asset in sort_assets.slice(pagenumber*perpagenum, pagenumber*perpagenum+perpagenum):
 			var instance = entry.instantiate()
 			
 			instance.info = assets[asset]
@@ -124,6 +124,7 @@ func list_assets():
 			instance.authors = assets[asset]["authors"].keys()
 			instance.categories = assets[asset]["categories"]
 			instance.tags = assets[asset]["tags"]
+			instance.downloads_num = assets[asset]["download_count"]
 			instance.api = api
 			
 			AssetsGrid.add_child(instance)

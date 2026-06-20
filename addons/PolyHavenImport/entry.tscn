@@ -1,66 +1,72 @@
-[gd_scene load_steps=2 format=3 uid="uid://dqurua3ttf8dj"]
+[gd_scene format=3 uid="uid://dqurua3ttf8dj"]
 
-[ext_resource type="Script" path="res://addons/PolyHavenImport/entry.gd" id="2"]
+[ext_resource type="Script" uid="uid://khcj58ro0fv7" path="res://addons/PolyHavenImport/entry.gd" id="2"]
 
-[node name="Entry" type="HBoxContainer"]
+[node name="Entry" type="HBoxContainer" unique_id=678995303]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 script = ExtResource("2")
 
-[node name="Thumb" type="TextureRect" parent="."]
+[node name="Thumb" type="TextureRect" parent="." unique_id=468203853]
 custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=164694181]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Title" type="LinkButton" parent="VBoxContainer"]
+[node name="Title" type="LinkButton" parent="VBoxContainer" unique_id=1380196272]
 layout_mode = 2
 underline = 1
 
-[node name="Authors" type="Label" parent="VBoxContainer"]
+[node name="Authors" type="Label" parent="VBoxContainer" unique_id=56231667]
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_colors/font_color = Color(0.470588, 0.470588, 0.470588, 1)
 
-[node name="Categories" type="Label" parent="VBoxContainer"]
+[node name="Categories" type="Label" parent="VBoxContainer" unique_id=1105387205]
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_colors/font_color = Color(0.470588, 0.470588, 0.470588, 1)
 
-[node name="Tags" type="Label" parent="VBoxContainer"]
+[node name="Tags" type="Label" parent="VBoxContainer" unique_id=774542446]
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_colors/font_color = Color(0.470588, 0.470588, 0.470588, 1)
 
-[node name="ImportContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ImportContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=125385247]
 layout_mode = 2
 size_flags_vertical = 10
-theme_override_constants/separation = 0
+theme_override_constants/separation = 6
 
-[node name="ImportBtn" type="Button" parent="VBoxContainer/ImportContainer"]
+[node name="ImportBtn" type="Button" parent="VBoxContainer/ImportContainer" unique_id=662207460]
 layout_mode = 2
 text = "Import"
 
-[node name="QualityDropDown" type="OptionButton" parent="VBoxContainer/ImportContainer"]
+[node name="QualityDropDown" type="OptionButton" parent="VBoxContainer/ImportContainer" unique_id=30892362]
 layout_mode = 2
 
-[node name="DownloadContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="DownloadsNum" type="Label" parent="VBoxContainer/ImportContainer" unique_id=1616513638]
+layout_mode = 2
+size_flags_vertical = 1
+text = "0 downloads"
+vertical_alignment = 1
+
+[node name="DownloadContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1011425358]
 visible = false
 layout_mode = 2
 size_flags_vertical = 10
 theme_override_constants/separation = 0
 
-[node name="DownloadProgressBar" type="ProgressBar" parent="VBoxContainer/DownloadContainer"]
+[node name="DownloadProgressBar" type="ProgressBar" parent="VBoxContainer/DownloadContainer" unique_id=546278931]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DownloadValueLabel" type="Label" parent="VBoxContainer/DownloadContainer"]
+[node name="DownloadValueLabel" type="Label" parent="VBoxContainer/DownloadContainer" unique_id=710861009]
 layout_mode = 2
 text = "MiB / MiB"
 
